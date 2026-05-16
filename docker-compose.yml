@@ -1,0 +1,17 @@
+services:
+  externevm-reth:
+    build:
+      context: .
+      dockerfile: docker/reth.Dockerfile
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+      - "30303:30303"
+    volumes:
+      - ./config:/config
+      - reth-data:/data
+    environment:
+      RUST_LOG: info
+
+volumes:
+  reth-data:

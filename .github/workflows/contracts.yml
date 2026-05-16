@@ -1,0 +1,24 @@
+name: Contracts CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  foundry:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Build contracts
+        working-directory: contracts
+        run: forge build
+
+      - name: Test contracts
+        working-directory: contracts
+        run: forge test -vvv

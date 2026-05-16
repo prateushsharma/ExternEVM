@@ -1,0 +1,18 @@
+[package]
+name = "externevm-precompile"
+version = "0.1.0"
+edition = "2021"
+description = "Custom API_CALL precompile for ExternEVM"
+
+[dependencies]
+alloy-primitives = "0.8"
+alloy-sol-types = "0.8"
+revm-precompile = "14"
+bytes = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+thiserror = "2"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
