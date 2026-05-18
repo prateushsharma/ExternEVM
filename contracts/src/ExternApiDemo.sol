@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-/// @title ExternApiDemo — showcases ExternEVM's API_CALL precompile (raw URL mode)
-/// @notice Milestone 3: precompile decodes ApiRequest and returns mock responses.
-///         Milestone 4 will replace mocks with real HTTP calls.
+/// @title ExternApiDemo — showcases ExternEVM's API_CALL precompile
+/// @notice Milestone 4: precompile performs REAL HTTP calls and returns live data.
 contract ExternApiDemo {
     address constant API_CALL =
         address(0x00000000000000000000000000000000000000AA);
@@ -17,11 +16,7 @@ contract ExternApiDemo {
         uint8 responseType;
     }
 
-    // -----------------------------------------------------------------------
-    // Backward compatibility (Milestone 1/2)
-    // -----------------------------------------------------------------------
-
-    /// @notice Calls 0xAA with empty input — returns uint256(1234).
+    /// @notice Backward compat — empty input returns uint256(1234)
     function getReserveDummy() external view returns (uint256) {
         (bool ok, bytes memory out) = API_CALL.staticcall("");
         require(ok, "API_CALL failed");
@@ -29,11 +24,7 @@ contract ExternApiDemo {
         return abi.decode(out, (uint256));
     }
 
-    // -----------------------------------------------------------------------
-    // Weather API demos
-    // -----------------------------------------------------------------------
-
-    /// @notice Get temperature as uint256. Mock returns 72.
+    /// @notice REAL weather temperature from weather.gov
     function getWeather() external view returns (uint256) {
         ApiRequest memory req = ApiRequest({
             url: "https://api.weather.gov/gridpoints/TOP/31,80/forecast",
@@ -43,13 +34,12 @@ contract ExternApiDemo {
             responsePath: "properties.periods[0].temperature",
             responseType: 1
         });
-
         (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
         require(ok, "API_CALL failed");
         return abi.decode(out, (uint256));
     }
 
-    /// @notice Get weather description as string. Mock returns "Sunny, 72°F".
+    /// @notice REAL weather description from weather.gov
     function getWeatherDescription() external view returns (string memory) {
         ApiRequest memory req = ApiRequest({
             url: "https://api.weather.gov/gridpoints/TOP/31,80/forecast",
@@ -59,75 +49,72 @@ contract ExternApiDemo {
             responsePath: "properties.periods[0].shortForecast",
             responseType: 2
         });
-
         (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
         require(ok, "API_CALL failed");
         return abi.decode(out, (string));
     }
 
-    // -----------------------------------------------------------------------
-    // Price feed demos
-    // -----------------------------------------------------------------------
-
-    /// @notice Get gold price as uint256. Mock returns 2340.
-    function getGoldPrice() external view returns (uint256) {
+    /// @notice REAL ISS position latitude
+    function getISSPosition() external view returns (string memory) {
         ApiRequest memory req = ApiRequest({
-            url: "https://api.metals.live/v1/spot/gold",
+            url: "http://api.open-notify.org/iss-now.json",
             method: "GET",
             headers: bytes(""),
             body: bytes(""),
-            responsePath: "price",
-            responseType: 1
-        });
-
-        (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
-        require(ok, "API_CALL failed");
-        return abi.decode(out, (uint256));
-    }
-
-    /// @notice Get bitcoin price as uint256. Mock returns 104000.
-    function getBitcoinPrice() external view returns (uint256) {
-        ApiRequest memory req = ApiRequest({
-            url: "https://api.coindesk.com/v1/bpi/currentprice.json",
-            method: "GET",
-            headers: bytes(""),
-            body: bytes(""),
-            responsePath: "bpi.USD.rate_float",
-            responseType: 1
-        });
-
-        (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
-        require(ok, "API_CALL failed");
-        return abi.decode(out, (uint256));
-    }
-
-    // -----------------------------------------------------------------------
-    // Fun / misc demos
-    // -----------------------------------------------------------------------
-
-    /// @notice Get a random joke as string.
-    ///         Mock returns: "Why did the smart contract go to therapy? Too many trust issues."
-    function getRandomJoke() external view returns (string memory) {
-        ApiRequest memory req = ApiRequest({
-            url: "https://official-joke-api.appspot.com/random_joke",
-            method: "GET",
-            headers: bytes(""),
-            body: bytes(""),
-            responsePath: "setup",
+            responsePath: "iss_position.latitude",
             responseType: 2
         });
-
         (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
         require(ok, "API_CALL failed");
         return abi.decode(out, (string));
     }
 
-    // -----------------------------------------------------------------------
-    // Power functions — fully customizable
-    // -----------------------------------------------------------------------
+    /// @notice REAL people count currently in space
+    function getPeopleInSpace() external view returns (uint256) {
+        ApiRequest memory req = ApiRequest({
+            url: "http://api.open-notify.org/astros.json",
+            method: "GET",
+            headers: bytes(""),
+            body: bytes(""),
+            responsePath: "number",
+            responseType: 1
+        });
+        (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
+        require(ok, "API_CALL failed");
+        return abi.decode(out, (uint256));
+    }
 
-    /// @notice Call any API with custom URL, method, responsePath, and responseType.
-    ///         Returns raw bytes — caller decodes based on their responseType.
+    /// @notice REAL Bitcoin price from CoinGecko
+    function getBitcoinPrice() external view returns (uint256) {
+        ApiRequest memory req = ApiRequest({
+            url: "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+            method: "GET",
+            headers: bytes(""),
+            body: bytes(""),
+            responsePath: "bitcoin.usd",
+            responseType: 1
+        });
+        (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
+        require(ok, "API_CALL failed");
+        return abi.decode(out, (uint256));
+    }
+
+    /// @notice REAL Ethereum price from CoinGecko
+    function getEthereumPrice() external view returns (uint256) {
+        ApiRequest memory req = ApiRequest({
+            url: "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd",
+            method: "GET",
+            headers: bytes(""),
+            body: bytes(""),
+            responsePath: "ethereum.usd",
+            responseType: 1
+        });
+        (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
+        require(ok, "API_CALL failed");
+        return abi.decode(out, (uint256));
+    }
+
+    /// @notice Generic API caller
     function callCustomApi(
         string calldata url,
         string calldata method,
@@ -142,13 +129,12 @@ contract ExternApiDemo {
             responsePath: responsePath,
             responseType: responseType
         });
-
         (bool ok, bytes memory out) = API_CALL.staticcall(abi.encode(req));
         require(ok, "API_CALL failed");
         return out;
     }
 
-    /// @notice Raw bytes in, raw bytes out — for debugging the precompile directly.
+    /// @notice Raw precompile call
     function rawApiCall(bytes calldata data) external view returns (bytes memory) {
         (bool ok, bytes memory out) = API_CALL.staticcall(data);
         require(ok, "API_CALL failed");
