@@ -9,5 +9,5 @@ library ExternAPI {
     address constant API_CALL =
         address(0x00000000000000000000000000000000000000AA);
 
-    // Library functions will be added in Chat 4.
+   
 }
