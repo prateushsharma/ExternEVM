@@ -352,7 +352,7 @@ The `responsePath` field uses dot notation with optional array indexing:
 ### 1. Clone the repo
 
 ```bash
-git clone --recursive https://github.com/AKhilRaghworkerV/ExternEVM.git
+git clone --recursive https://github.com/ExternEVM/ExternEVM.git
 cd ExternEVM
 ```
 
